@@ -30,13 +30,17 @@ if isinstance(runtime, dict):
 st.markdown("<h1 class='main-title'>🤍 Nossa Jornada do Bebê</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle'>Uma memória viva da gravidez</p>", unsafe_allow_html=True)
 
+if "menu" not in st.session_state:
+    st.session_state["menu"] = "Hoje"
+
 menu = st.radio(
     "Navegação",
     ["Hoje", "Sentir", "Nossa História", "Preparar", "Cuidar do Futuro", "Configurações"],
     horizontal=True,
     label_visibility="collapsed",
-
+    index=["Hoje", "Sentir", "Nossa História", "Preparar", "Cuidar do Futuro", "Configurações"].index(st.session_state["menu"])
 )
+
 
 if menu == "Hoje":
     render_hoje(config)
