@@ -27,7 +27,7 @@ def render_hoje(config: dict):
         st.warning("Para começar, informe sua data em **Configurações**.")
         soft_card(
             "Comece por aqui",
-            "Vá em **Configurações**, escolha **DPP** ou **DUM**, salve e volte para cá."
+            "Vá em **Configurações**, escolha **DPP** ou **DUM**, salve e volte para cá.",
         )
         return
 
@@ -38,9 +38,11 @@ def render_hoje(config: dict):
 
     baby_name = (config.get("nome_bebe") or "").strip()
     mae_name = (config.get("nome_mae") or "Mamãe").strip()
+    theme = (config.get("tema_visual") or "rose").strip()
 
     st.markdown(f"### Semana {week}" + (f" de {baby_name} 🤍" if baby_name else " 🤍"))
 
+    # Card “printável” (HTML)
     story_card(f"Semana {week}", baby_size, message)
 
     soft_card("Momento do dia", get_daily_moment())
@@ -49,30 +51,33 @@ def render_hoje(config: dict):
         "A cada semana, o corpo e o coração se reorganizam para acolher uma nova vida.",
     )
 
-    if st.button("📸 Gerar modo story"):
-        st.success("Tela pronta para print e compartilhamento.")
+    if st.button("📸 Gerar modo story (prévia)"):
+        st.success("Prévia pronta para print e compartilhamento.")
         story_card(
             f"Semana {week} 🤍",
             baby_size,
             f"{mae_name}, estamos te esperando com todo amor do mundo.",
         )
-   st.markdown("#### Modo Story (PNG)")
+
+    # ✅ PNG real 1080×1920 para Instagram Story
+    st.markdown("#### Modo Story (PNG)")
+
     story_bytes = generate_story_png(
         week=week,
         baby_size=baby_size,
         message=message,
         baby_name=baby_name,
         mae_name=mae_name,
-        theme=(config.get("tema_visual") or "rose"),
+        theme=theme,
     )
 
-    # Preview (opcional, mas ajuda)
+    # Preview (ajuda no iPhone)
     st.image(story_bytes, use_container_width=True)
 
     st.download_button(
-        label="📥 Baixar Story (PNG 1080x1920)",
+        label="📥 Baixar Story (PNG 1080×1920)",
         data=story_bytes,
         file_name=f"story_semana_{week}.png",
         mime="image/png",
         use_container_width=True,
-    )     
+    )
