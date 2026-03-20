@@ -66,7 +66,8 @@ def render_configuracoes():
         new_config["nome_bebe"] = (nome_bebe or "").strip()
         new_config["tema_visual"] = tema
         new_config["modo_som"] = bool(modo_som)
-
+        
+     
         # ✅ “Ou um ou outro”
         if dpp is not None:
             new_config["metodo_data"] = "DPP"
@@ -84,6 +85,7 @@ def render_configuracoes():
             # No Streamlit Cloud, escrita em arquivo pode falhar em alguns casos
             st.session_state["config_runtime"] = new_config
             st.warning("Não consegui salvar em arquivo aqui, mas mantive suas configurações nesta sessão.")
+            st.rerun()
 
 
 def _safe_date(value):
