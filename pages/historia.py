@@ -10,7 +10,10 @@ def render_historia():
 
     titulo = st.text_input("Momento")
     descricao = st.text_area("Descrição", height=120)
-    categoria = st.selectbox("Categoria", ["Descoberta", "Ultrassom", "Compra especial", "Emoção", "Outro"])
+    categoria = st.selectbox(
+        "Categoria",
+        ["Descoberta", "Ultrassom", "Compra especial", "Emoção", "Outro"]
+    )
 
     if st.button("Adicionar à timeline"):
         if titulo.strip():
@@ -31,20 +34,24 @@ def render_historia():
     st.markdown("#### Linha do tempo")
     df = load_timeline()
 
+    # ✅ REMOVE LINHAS TOTALMENTE VAZIAS
+    df = df.dropna(how="all")
+
     if df.empty:
         st.info("Sua história ainda está começando por aqui.")
         return
 
-    # Agora é seguro: storage garante coluna "data"
     df = df.sort_values("data", ascending=False)
 
     for _, row in df.iterrows():
         st.markdown(
             f"""
 <div class="soft-card">
-  <div class="small-label">{row['data']} • {row['categoria']}</div>
-  <div class="section-title">{row['titulo']}</div>
-  <div>{row['descricao']}</div>
+  <div class="small-label">
+    {row.get('data', '')} • {row.get('categoria', '')}
+  </div>
+  <div class="section-title">{row.get('titulo', '')}</div>
+  <div>{row.get('descricao', '')}</div>
 </div>
             """,
             unsafe_allow_html=True,
