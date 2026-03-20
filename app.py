@@ -33,13 +33,20 @@ st.markdown("<p class='subtitle'>Uma memória viva da gravidez</p>", unsafe_allo
 if "menu" not in st.session_state:
     st.session_state["menu"] = "Hoje"
 
+opcoes = ["Hoje", "Sentir", "Nossa História", "Preparar", "Cuidar do Futuro", "Configurações"]
+
+if "menu" not in st.session_state:
+    st.session_state["menu"] = "Hoje"
+
 menu = st.radio(
     "Navegação",
-    ["Hoje", "Sentir", "Nossa História", "Preparar", "Cuidar do Futuro", "Configurações"],
+    opcoes,
     horizontal=True,
     label_visibility="collapsed",
-    index=["Hoje", "Sentir", "Nossa História", "Preparar", "Cuidar do Futuro", "Configurações"].index(st.session_state["menu"])
+    index=opcoes.index(st.session_state["menu"])
 )
+
+st.session_state["menu"] = menu
 
 
 if menu == "Hoje":
