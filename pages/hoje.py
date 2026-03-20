@@ -5,13 +5,14 @@ from services.emotion_service import get_week_message, get_daily_moment
 from services.story_export import generate_story_png
 from services.fase_service import get_fase_content
 
+
 def render_hoje(config: dict):
     # ✅ Prioriza config salvo em runtime (Cloud-safe)
     runtime = st.session_state.get("config_runtime")
     if isinstance(runtime, dict):
         config = runtime
 
-    # ✅ Verificação explícita de data
+    # ✅ Verificação explícita de data (DPP ou DUM)
     metodo = (config.get("metodo_data") or "").upper()
     dpp = (config.get("data_prevista_parto") or "").strip()
     dum = (config.get("data_ultima_menstruacao") or "").strip()
@@ -45,17 +46,21 @@ def render_hoje(config: dict):
     # Card “printável” (HTML)
     story_card(f"Semana {week}", baby_size, message)
 
+    # Momento do dia
     soft_card("Momento do dia", get_daily_moment())
-    soft_card(
-        fase = get_fase_content(week)
-        emocional = (fase.get("emocional") or message).strip()
-        curiosidade = (fase.get("curiosidade") or "").strip()
-        
-        conteudo = f"<p><strong>💭 Emoção</strong><br>{emocional}</p>"
-        if curiosidade:
-            conteudo += f"<p><strong>💡 Você sabia?</strong><br>{curiosidade}</p>"
-        
-        soft_card("Sobre esta fase", conteudo)
+
+    # ✅ Bloco coerente: “Sobre esta fase” (emoção + curiosidade)
+    fase = get_fase_content(week)
+    emocional = (fase.get("emocional") or message).strip()
+    curiosidade = (fase.get("curiosidade") or "").strip()
+
+    conteudo = f"<p><strong>💭 Emoção</strong><br>{emocional}</p>"
+    if curiosidade:
+        conteudo += f"<p><strong>💡 Você sabia?</strong><br>{curiosidade}</p>"
+
+    soft_card("Sobre esta fase", conteudo)
+
+    # Prévia extra (opcional)
     if st.button("📸 Gerar modo story (prévia)"):
         st.success("Prévia pronta para print e compartilhamento.")
         story_card(
@@ -70,13 +75,12 @@ def render_hoje(config: dict):
     story_bytes = generate_story_png(
         week=week,
         baby_size=baby_size,
-        message=message,
+        message=emocional,  # aqui usamos a parte emocional (fica mais “story”)
         baby_name=baby_name,
         mae_name=mae_name,
         theme=theme,
     )
 
-    # Preview (ajuda no iPhone)
     st.image(story_bytes, use_container_width=True)
 
     st.download_button(
