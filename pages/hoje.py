@@ -2,6 +2,7 @@ import streamlit as st
 from components.cards import soft_card, story_card
 from services.pregnancy_service import calculate_current_week, get_baby_size
 from services.emotion_service import get_week_message, get_daily_moment
+from services.story_export import generate_story_png
 
 
 def render_hoje(config: dict):
@@ -55,3 +56,23 @@ def render_hoje(config: dict):
             baby_size,
             f"{mae_name}, estamos te esperando com todo amor do mundo.",
         )
+   st.markdown("#### Modo Story (PNG)")
+    story_bytes = generate_story_png(
+        week=week,
+        baby_size=baby_size,
+        message=message,
+        baby_name=baby_name,
+        mae_name=mae_name,
+        theme=(config.get("tema_visual") or "rose"),
+    )
+
+    # Preview (opcional, mas ajuda)
+    st.image(story_bytes, use_container_width=True)
+
+    st.download_button(
+        label="📥 Baixar Story (PNG 1080x1920)",
+        data=story_bytes,
+        file_name=f"story_semana_{week}.png",
+        mime="image/png",
+        use_container_width=True,
+    )     
