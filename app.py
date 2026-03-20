@@ -18,7 +18,14 @@ st.set_page_config(
 
 apply_theme()
 ensure_data_files()
+# Carrega config toda vez que o app executa (mantém atualizado após salvar)
 config = load_config()
+
+# Se Configurações não conseguiu salvar em arquivo no Cloud,
+# usamos o config em runtime (da sessão)
+runtime = st.session_state.get("config_runtime")
+if isinstance(runtime, dict):
+    config = runtime
 
 st.markdown("<h1 class='main-title'>🤍 Nossa Jornada do Bebê</h1>", unsafe_allow_html=True)
 st.markdown("<p class='subtitle'>Uma memória viva da gravidez</p>", unsafe_allow_html=True)
