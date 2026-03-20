@@ -12,7 +12,7 @@ def render_configuracoes():
     try:
         config.update(load_config() or {})
     except Exception:
-        # Se por algum motivo não conseguir ler o config.json, seguimos com o default
+        # Se não conseguir ler o config.json, seguimos com o default
         pass
 
     col1, col2 = st.columns(2)
@@ -66,8 +66,7 @@ def render_configuracoes():
         new_config["nome_bebe"] = (nome_bebe or "").strip()
         new_config["tema_visual"] = tema
         new_config["modo_som"] = bool(modo_som)
-        
-     
+
         # ✅ “Ou um ou outro”
         if dpp is not None:
             new_config["metodo_data"] = "DPP"
@@ -78,14 +77,18 @@ def render_configuracoes():
             new_config["data_ultima_menstruacao"] = dum.isoformat()
             new_config["data_prevista_parto"] = ""
 
+        # Opcional: após salvar, voltar automaticamente para "Hoje"
+        st.session_state["menu"] = "Hoje"
+
         try:
             save_config(new_config)
             st.success("Configurações salvas 🤍")
+            st.rerun()  # ✅ recarrega o app para refletir o config novo
         except Exception:
             # No Streamlit Cloud, escrita em arquivo pode falhar em alguns casos
             st.session_state["config_runtime"] = new_config
             st.warning("Não consegui salvar em arquivo aqui, mas mantive suas configurações nesta sessão.")
-            st.rerun()
+            st.rerun()  # ✅ recarrega mesmo assim
 
 
 def _safe_date(value):
@@ -97,3 +100,4 @@ def _safe_date(value):
         return date(int(y), int(m), int(d))
     except Exception:
         return None
+     
