@@ -3,7 +3,7 @@ from components.cards import soft_card, story_card
 from services.pregnancy_service import calculate_current_week, get_baby_size
 from services.emotion_service import get_week_message, get_daily_moment
 from services.story_export import generate_story_png
-
+from services.fase_service import get_fase_content
 
 def render_hoje(config: dict):
     # ✅ Prioriza config salvo em runtime (Cloud-safe)
@@ -47,10 +47,15 @@ def render_hoje(config: dict):
 
     soft_card("Momento do dia", get_daily_moment())
     soft_card(
-        "Curiosidade da fase",
-        "A cada semana, o corpo e o coração se reorganizam para acolher uma nova vida.",
-    )
-
+        fase = get_fase_content(week)
+        emocional = (fase.get("emocional") or message).strip()
+        curiosidade = (fase.get("curiosidade") or "").strip()
+        
+        conteudo = f"<p><strong>💭 Emoção</strong><br>{emocional}</p>"
+        if curiosidade:
+            conteudo += f"<p><strong>💡 Você sabia?</strong><br>{curiosidade}</p>"
+        
+        soft_card("Sobre esta fase", conteudo)
     if st.button("📸 Gerar modo story (prévia)"):
         st.success("Prévia pronta para print e compartilhamento.")
         story_card(
