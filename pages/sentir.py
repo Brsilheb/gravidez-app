@@ -36,22 +36,27 @@ def render_sentir():
     st.markdown("#### Seus registros")
     df = load_diario()
 
+    # ✅ REMOVE LINHAS TOTALMENTE VAZIAS (evita nan • nan • nan)
+    df = df.dropna(how="all")
+
     if df.empty:
         st.info("Nenhum registro salvo ainda.")
         return
 
-    # Agora é seguro: storage garante coluna "data"
     df = df.sort_values("data", ascending=False)
 
     for _, row in df.iterrows():
         st.markdown(
             f"""
 <div class="soft-card">
-  <div class="small-label">{row['data']} • {row['emocao']} • {row['tipo']}</div>
-  <div class="section-title">{row['titulo'] if row['titulo'] else 'Sem título'}</div>
-  <div>{row['texto']}</div>
+  <div class="small-label">
+    {row.get('data', '')} • {row.get('emocao', '')} • {row.get('tipo', '')}
+  </div>
+  <div class="section-title">
+    {row.get('titulo') if row.get('titulo') else 'Sem título'}
+  </div>
+  <div>{row.get('texto', '')}</div>
 </div>
             """,
             unsafe_allow_html=True,
         )
-
